@@ -1,0 +1,303 @@
+---
+title: "Results"
+author: "Thor G. Junker"
+params:
+  DateofData:
+  cpd_data:
+  cpd_purch:
+  my_directory:
+date: "`r params$DateofData`"
+output: 
+  bookdown::word_document2:
+  number_sections: true
+  fig_caption: yes
+---
+
+```{r setup, include=FALSE, echo = FALSE, eval = TRUE, cache=TRUE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+library(lubridate)
+library(officer)
+setup_user_date_directory <- read.csv(file.path(getwd(),"setup_user_date_directory.csv"))
+DoD <- format(as.Date(setup_user_date_directory$DateofData),"%Y%b%d")
+# DoD <- format(as.Date(params$DateofData),"%Y%b%d")
+file_path <- file.path(setup_user_date_directory$file_path)
+knitr::opts_knit$set(root.dir = file_path)
+
+cpd_data <- tar_read(cpd_participants)
+#cpd_purch <- params$cpd_purch
+cpd_purch <-tar_read(cpd2)
+cpd_purch <- cpd_purch%>% ungroup() 
+
+
+#cpd_data <- read.csv(file.path(file_path,"CPD_enriched_final.csv"))
+#consented <- read.csv(file.path(file_path,"consented.csv"))
+consented <- read.csv(file.path(file_path,"consented.csv"))
+
+N_participants <- length(unique(consented$participant))
+
+#All current and future studies
+N_all_current_future_studies <- sum(consented$projectconsent == "")
+
+#All current studies
+N_all_current_studies <- sum(consented$consentefter_covid == 1 &
+                                    consented$consentibd == 1 &
+                                    consented$consentenvironment == 1 &
+                                    consented$consenttarmbaktsyg == 1)
+
+#Did not wish to share data in identifiable form beyond SSI
+N_not_share_data <- sum(consented$accepteret_videregivelse == "false")
+
+#Only accepted participation in one project
+N_one_study <- sum(apply(consented[,10:13],1,sum) == 1)
+
+#Removed due to having only 0 or 1 receipt
+cpd_data <- cpd_data %>% group_by(participant) %>%
+  mutate(ObsTime = round(lubridate::interval(min(purchdate), max(purchdate)) %/% lubridate::days(1) /30.25,2)) %>%
+  filter(ObsTime != 0)
+
+N_removed <- sum(!(consented$participant %in% cpd_data$participant))
+
+
+#Calculate how much of the total items bought that is accounted by the top 100 items
+cpd_n_items <- cpd_purch %>% group_by(itemname) %>%
+  filter(!(itemname %in% c("pant","flaskepant", "daasepant", "pose", "baerepose"))) %>%
+  summarise(n_items = sum(amount)) %>% arrange(-n_items)
+
+Percentage_of_itemnames <- cumsum(cpd_n_items$n_items)/sum(cpd_n_items$n_items)*100
+Percentage_of_1000_itemnames <- round(cumsum(cpd_n_items[1:1000,]$n_items)/sum(cpd_n_items$n_items)*100,1)
+
+
+
+cpd_data2 <- cpd_data %>% group_by(itemname, itemnumber, receipt)
+
+unique_itemnames_frac <-  round(nrow(cpd_data %>% group_by(itemname) %>% filter(datasource %in% c("gs1","Kemiluppen","frida", "openfoodfacts")) %>%
+  dplyr::select(itemname) %>% slice(1))/length(unique(cpd_data2$itemname))*100,1)
+
+#Total items bought
+n_total_itemnames <- as.numeric(cpd_data2 %>% slice(1) %>% ungroup() %>%
+                              summarise(sum(amount)))
+n_itemnames <- cpd_data2 %>% filter(datasource %in% c("gs1", "Kemiluppen", "frida", "openfoodfacts")) %>%
+                                                             slice(1) %>% ungroup() %>%
+                                                             summarise(n = sum(amount))
+total_itemnames_frac <- round(n_itemnames/n_total_itemnames*100,1)
+
+
+###################################################################
+#Calculate fraction of products with a error rate below 0.25 for KJ 
+###################################################################
+load("KJ_cumulation_unique")
+load("KJ_cumulation_total")
+
+###########################
+
+SRD <- read.csv(file.path(file_path,"Demografi.csv"))
+
+
+#For each participant, we find the amount of months, between their first and last purchase, where they
+#zero purchases. This is then subtracted from their total months to gain a more accurate estimate of monthly behavior
+cpd_purch_list <- split(cpd_purch, cpd_purch$participant) 
+cpd_purch1 <- do.call(rbind,lapply(cpd_purch_list, function(X){
+  
+  months_factor <- as.factor(seq(floor_date(ymd(min(X$purchdate)), "month"), floor_date(ymd(max(X$purchdate)),"month"), by = "months"))
+  
+  
+  X2 <- X %>%
+    mutate(purchmonth = factor(as.factor(floor_date(ymd(purchdate),"month")), levels = levels(months_factor))) %>%
+    complete(purchmonth, fill = list(NA))
+  
+  X$InactiveMonths <- sum(is.na(X2$participant))
+  
+  return(X)
+}))
+
+cpd_purch2 <- cpd_purch1 %>% left_join(SRD %>% mutate(dateofbirth = as.Date(dateofbirth)), by = c("participant","gender", "dateofbirth")) %>% 
+  group_by(participant) %>%
+  mutate(current_age = floor(difftime(DateofData,as.Date(dateofbirth),"weeks")/365.25),
+       sex = as.factor(case_when(gender == "m" ~ "Male",
+                                 gender == "k" ~ "Female"))) %>%
+  group_by(participant) %>%
+  summarise(sex = first(sex), age = floor(first(current_age)), n_receipts = length(unique(receipt)),
+            ObsTime = round(interval(min(purchdate), max(purchdate)) %/% days(1) /30.25,2),
+            ActiveTime = ObsTime - InactiveMonths[1],
+            InactiveTime = InactiveMonths[1],
+            noMerchants = length(unique(merchantname)), totalmoney_month = sum(total_price)/ActiveTime,
+            receipts_month = n_receipts/ActiveTime, itemprice_mean = sum(itemprice*amount)/sum(amount),
+            n_items = sum(amount), n_items_unique = length(unique(itemname)),
+            AnyDiseases = case_when(sum(is.na(disease)) == 1 ~ 0,
+                                    TRUE ~ 1)) %>%
+  mutate(EnrollmentTime_group = case_when(ObsTime < 12 ~ "< 1 Year",
+                                          ObsTime >= 12 & ObsTime < 24 ~ "1-2 Years",
+                                          ObsTime >= 24 & ObsTime < 36 ~ "2-3 Years",
+                                          ObsTime >= 36 & ObsTime < 48 ~ "3-4 Years",
+                                          ObsTime >= 48 & ObsTime < 60 ~ "4-5 Years",
+                                          ObsTime >= 60 ~ "+5 Years")) %>%
+  ungroup() %>% 
+  filter(ActiveTime != 0)
+
+
+#Fix order of enrollment time
+cpd_purch2$EnrollmentTime_group <- factor(as.factor(cpd_purch2$EnrollmentTime_group), levels = c("< 1 Year", "1-2 Years", "2-3 Years",
+                                                                                               "3-4 Years", "4-5 Years", "+5 Years"))
+tbl <- cpd_purch2 %>% dplyr::select(sex,age,n_receipts,noMerchants,totalmoney_month,
+                                 receipts_month, itemprice_mean,n_items,InactiveTime,
+                                 EnrollmentTime_group) %>%
+  tbl_summary(
+    by = NULL,
+    type = list(c(itemprice_mean,receipts_month) ~ "continuous"),
+    statistic = list(c(age, n_receipts, noMerchants,n_items,itemprice_mean,InactiveTime,receipts_month,totalmoney_month) ~ "{median} [{p25}-{p75}] ({min}-{max})"),
+    missing="no",
+    label = list(age ~ "Age",
+                 n_receipts ~ "No. receipts",
+                 n_items ~ "No. products",
+                 noMerchants ~ "No. merchants used",
+                 itemprice_mean ~ "Average product price (dkk)",
+                 totalmoney_month ~ "Money spent pr. Month (dkk)",
+                 receipts_month ~ "Receipts pr. Month",
+                 InactiveTime ~ "Inactive time (Months)",
+                 sex ~ "Sex",
+                 EnrollmentTime_group ~ "Enrollment time"),
+    digits = c("itemprice_mean", "receipts_month") ~ 1) %>%
+  modify_table_styling(columns = stat_0, align = "left")
+
+
+tbl1 <- tbl %>%
+  modify_header( label = "**Characteristics and purchase behavior**") %>%#,
+    #update = list(all_stat_cols(FALSE) ~ "**{level}** \n N = {n}",
+                               #stat_0 ~ "**Overall** \n N = {N}")) %>%
+  modify_table_body(
+    ~.x %>%
+      dplyr::arrange(
+        match(var_label, c("Age","Sex","No. products", "Average product price (dkk)", "No. receipts", "Receipts pr. Month", "No. retailers used",
+                           "Money spent pr. Month (dkk)", "Enrollment time","Inactive time (Months)"))
+      )) %>%
+  bold_labels() %>% 
+  italicize_levels() %>%
+  modify_footnote(everything() ~ NA) %>%
+  gtsummary::as_flex_table() %>%
+  fontsize(size=10) %>%
+  set_caption("Characteristics and purchase behavior") %>%
+  flextable::footnote(i = c(1,5:10,18),j=1, value = as_paragraph("Reports Median [IQR] (Min-Max)"),
+                      ref_symbols = "a", part = "body") %>%
+  flextable::footnote(i = 18,j=1, value = as_paragraph("Defined as whole months with zero purchases."),
+                      ref_symbols = "b", part = "body")
+  
+#Find the average, min/max of a receipts per months
+receipts_month <- round(quantile(cpd_purch2$receipts_month, probs = c(0.25,0.5,0.75)),1)
+totalmoney_month <- round(median(cpd_purch2$totalmoney_month), digits = -2)
+
+#cpd_data <- read.csv(file.path(file_path,"CPD_enriched_final.csv"))
+
+cpd_purch1 <- cpd_purch  %>% group_by(receipt) %>%
+  mutate(StoreType = case_when(merchantname %in% tolower(c("Bilka", "Foetex", "MENY", "Min Koebmand", "Netto", "REMA1000",
+                                                           "SPAR", "Loevbjerg", "ABC Lavpris")) ~ "Groceries",
+                               merchantname %in% tolower(c("Carls Jr.", "Lagkagehuset")) ~ "Cafe/Restaurant",
+                               merchantname %in% tolower(c("Matas", "Normal")) ~ "Cosmetics",
+                               TRUE ~ "Other"),
+         TotalMoney = sum(total_price),
+         n_items = sum(amount),
+         n_items_unique = length(unique(itemname))) %>%
+  ungroup() %>% 
+  mutate(new_receipt = !duplicated(receipt),
+                   new_itemname = !duplicated(itemname),
+                   Grocery_Store = case_when(merchantname == "bilka" ~ "Store 1",
+                                             merchantname == "foetex" ~ "Store 2",
+                                             merchantname == "netto" ~ "Store 3",
+                                             merchantname == "rema1000" ~ "Store 4",
+                                             (StoreType == "Groceries") & !(merchantname %in% c("bilka", "foetex", "netto","rema1000")) ~ "Other grocery stores",
+                                             TRUE ~ NA_character_)) %>%
+  dplyr::select(receipt,itemname, amount, StoreType, Grocery_Store, yearno) %>%
+  dplyr::select(-StoreType, -Grocery_Store) %>%
+  group_by(yearno) %>%
+  summarise(receipt = length(unique(receipt)),
+            itemname = length(unique(itemname)),
+            items_bought = sum(amount)) %>% ungroup() %>%
+    gather(Variable, n, c("receipt","itemname", "items_bought"), factor_key = TRUE) %>%
+  mutate(yearno = as.factor(yearno)) %>% filter(!(yearno %in% c("2014","2023")))
+
+#cpd_data2 <- cpd_data1[1:10000,]
+# 
+# tbl2 <- cpd_purch1 %>% 
+#   mutate(new_receipt = !duplicated(receipt),
+#          new_itemname = !duplicated(itemname),
+#          Grocery_Store = case_when(merchantname == "bilka" ~ "Store 1",
+#                                    merchantname == "foetex" ~ "Store 2",
+#                                    merchantname == "netto" ~ "Store 3",
+#                                    merchantname == "rema1000" ~ "Store 4",
+#                                    (StoreType == "Groceries") & !(merchantname %in% c("bilka", "foetex", "netto","rema1000")) ~ "Other grocery stores",
+#                                    TRUE ~ NA_character_)) %>%
+#   dplyr::select(new_receipt,new_itemname, amount, StoreType, Grocery_Store, yearno) %>%
+#   tbl_summary(
+#     by = yearno,
+#     statistic = list(new_receipt ~ "{n}",
+#                      new_itemname ~ "{n}",
+#                      amount ~ "{sum}"),
+#     type = list(new_receipt ~ "dichotomous",
+#                 new_itemname ~ "dichotomous"),
+#     missing="no",
+#     label = list(new_receipt ~ "No. receipts",
+#                  new_itemname ~ "No. unique itemnames",
+#                  amount ~ "No. items bought",
+#                  StoreType = "Store Type",
+#                  Grocery_Store = "Grocery Store")) %>%
+#   modify_header(label = "**Year**",
+#                 update = all_stat_cols() ~ "**{level}**") %>%
+#   bold_labels() %>% 
+#   italicize_levels() %>%
+#   modify_footnote(everything() ~ NA) %>% 
+#   gtsummary::as_flex_table() %>%
+#   fontsize(size = 9) %>%
+#   set_caption("The table illustrates key factors to take into account when using consumer data, including merchant coverage, expenditure type of merchants, turnover, number of products sold etc.") %>%
+#   width(j = 1, width = 1.3) %>%
+#   width(j = c(2:6), width = 1)
+
+#Create data frame with number of participants each year
+active_participants <- cpd_purch %>% group_by(yearno, participant) %>%slice(1) %>% group_by(yearno) %>% summarise(n = n())
+unique_stores <- cpd_purch %>% group_by(yearno, merchantname) %>% slice(1) %>% group_by(yearno) %>% summarise(n = n())
+
+
+ft <- officer::fp_text(color = "red",bold = TRUE)
+```
+# Results
+In the first 1.5 year from  22 June 2021 to `r format(params$DateofData, "%d %B %Y")` N=`r N_participants` participants were recruited.
+Of these, `r N_all_current_studies`  (`r round(N_all_current_studies[1]/N_participants[1]*100,1)`%) consented to all registered studies while `r N_all_current_future_studies` (`r round(N_all_current_future_studies[1]/N_participants[1]*100,1)`%) also approved participation in all future studies. `r N_not_share_data` (`r round(N_not_share_data[1]/N_participants[1]*100,1)`%) did not consent to the sharing of data in an identifiable form beyond SSI. No participants consented to participation in less than two studies. `r N_removed` (`r round(N_removed[1]/N_participants[1]*100,1)`%) participants had one or fewer receipts registered in the data and were excluded. Overall information regarding number of participants, products bought and total number of receipts can be found Figure S1.
+
+## Characteristics of participants
+
+Table 1 shows basic demographics such as age and sex as well as store “loyalty” ranging from shopping in a single  store to attending a range of stores. Shopping frequency varied greatly with an inter quartile range (IQR) of `r receipts_month[[1]]`-`r receipts_month[[3]]` with an average of `r receipts_month[[2]]` receipts per months, with receipts being available from about half of the cohort for the past 5 ]years or more. The median total expenditure of each participant, each month, was roughly `r totalmoney_month` Danish Kroner (eg. approximately `r round(totalmoney_month/7.5)` Euro).
+
+## Receipt coverage over time
+
+The provider of digital receipts have been present in the Danish market since 2014 with an increasing number of merchants (from `r unique_stores[unique_stores[,"yearno"] == 2015,]$n` unique stores in 2015 to `r unique_stores[unique_stores[,"yearno"] == 2022,]$n` in 2022) and consumers continuously joining the MyPurchase cohort (from `r active_participants[active_participants[,"yearno"] == 2015,]$n` participants in 2015 to `r active_participants[active_participants[,"yearno"] == 2022,]$n` in 2022). Throughout the study period, the annual number of receipts (`r format(min(cpd_purch1[cpd_purch1[,"Variable"] == "receipt","n"]),big.mark = ",")` to `r format(max(cpd_purch1[cpd_purch1[,"Variable"] == "receipt","n"]),big.mark = ",")`), products(`r format(min(cpd_purch1[cpd_purch1[,"Variable"] == "itemname","n"]),big.mark = ",")` to `r format(max(cpd_purch1[cpd_purch1[,"Variable"] == "itemname","n"]),big.mark = ",")`) and total products bought (`r format(min(cpd_purch1[cpd_purch1[,"Variable"] == "items_bought","n"]),big.mark = ",")` to `r format(max(cpd_purch1[cpd_purch1[,"Variable"] == "items_bought","n"]),big.mark = ",")`) increased, reflecting the rise in the number of participants generating receipts as well as wider coverage of merchants. The distribution of products purchases i skewed towards a few frequently purchased products; thus the 1000 most frequently bought products accounted for `r Percentage_of_1000_itemnames[1000]`% of all products purchased (Figure S2).
+
+## Product enrichment
+
+After collection, all data underwent an enhancement-step where each product is enriched with additional information coming from different data sources. Currently, data sources include GS1, Frida, Open Food Facts, and Kemiluppen, which combined provide information regarding: product type, ingredients, nutrients, intended chemicals and more. GS1, Open Food Facts and Kemiluppen are matched on GTIN number whereas Frida uses word-recognition to the product name. The entire product enrichment pipeline is outlined in Figure 2 and enabled the retrieval of information beyond the product item name and item number for `r unique_itemnames_frac`% of all unique products, and `r total_itemnames_frac$n`% of the total amount of products purchased.
+
+
+
+```{r Flowchart1, echo=FALSE,fig.cap="Classic Flowchart of the available data.", eval = FALSE}
+knitr::include_graphics(file.path(file_path,"Figures/Flowchart1.png"))
+```
+
+```{r Flowchart2, echo=FALSE, fig.cap="Detailed flowchart of the enrichment of product information. *Excluded products with item-numbers that had either more than 14 numbers or less than 3 numbers.", eval = FALSE}
+knitr::include_graphics(file.path(file_path,"Figures/Flowchart2.png"))
+```
+
+```{r TotalItemsCumu, echo=FALSE, fig.cap="Percentage of total items bought that are made up by the 'n' most frequently bought item names", eval = FALSE}
+knitr::include_graphics(file.path(file_path,"Figures/Total_items_cumulative.png"))
+```
+
+```{r GS1FridaCompare, echo = FALSE, eval = FALSE, fig.cap="Cumulative distribution of Mean Max Difference of product information concerning KJ, Protein, Fat and caarbohydrates, comining from  GS1 and Frida"}
+knitr::include_graphics(file.path(file_path,"Figures/FridaGs1_Compare_plot.png"))
+```
+
+```{r GS1OpenFoodFacts-Compare, echo = FALSE, eval = FALSE, fig.cap="Cumulative distribution of Mean Max Difference of product information comining from  GS1 and OpenFoodFacts. Data is used for identical item numbers but no cases of overlapping items numbers were found in our purchase dataset"}
+knitr::include_graphics(file.path(file_path,"Figures/GS1OpenFoodFacts_Compare_plot.png"))
+```
+
+\newpage
+## Table 1: Age, sex, purchase behavior and follow-up distribution for the 417 cohort members {-}
+```{r table1, echo=FALSE, eval = TRUE}
+tbl1
+```

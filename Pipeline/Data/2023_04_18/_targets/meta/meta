@@ -1,0 +1,113 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+combined_datasources|stem|8fa0b7122133da07|591b1a9268c42ffd|c703ee0f662ed4a2|2098438757||t19403.7499167088s|32d0de2be0140b8c|92466469|rds|local|vector|||78.54||
+cpd_enriched|stem|error|012f8796b1871652|7c03a8d5faabf73b|-656690856||t19646.5261142068s|3bd8f66805fd112b|45|rds|local|vector|||0.03||first argument must be a vector
+cpd_enriched_final|stem|error|e22fefb259f400d9|210e606ec9affe2a|-361325755||t19646.5261164755s|3bd8f66805fd112b|45|rds|local|vector|||0.11||no applicable method for mutate applied to an object of class NULL
+cpd_participants|stem|error|0fae5593a673eb3f|550ee1bdb27a1361|-1776066872||t19646.5261146352s|3bd8f66805fd112b|45|rds|local|vector|||0||first argument must be a vector
+cpd_proddata|stem|error|a10464b71a91838a|0b6555119949ea0c|-348913346||t19646.5260902349s|3bd8f66805fd112b|45|rds|local|vector|||0.11||no applicable method for group_by applied to an object of class NULL
+cpd_tied_pruned|stem|f533d0bb2fcaa5be|4584b2406ca145a4|e8af3c52fb6e10af|-51186130||t19403.6187137079s|d8dc16d5c3e50863|710411|rds|local|vector|||199.68||
+fg_path|stem|99ab298294f96b75|c29ceea9415cfba8|e3451566351e6740|667123139|C:/Users/THGJ/Documents/ConsumerData - Github/Pipeline/Data/Common/nfg_tabel_rev_frtm.xlsx|t19641.3222251946s|24717be7552b67d0|62777|file|local|vector|||0||
+final_enrich_datasource|stem|error|e6515eff3c233962|dcd7ef44c9a6734d|-1735588635||t19646.5261134545s|3bd8f66805fd112b|45|rds|local|vector|||0||no applicable method for mutate applied to an object of class NULL
+flowchart_data1|stem|error|94bdfa6d46bfd1f2|013a75b7621595d9|488588832||t19646.5261216497s|3bd8f66805fd112b|45|rds|local|vector|||0.41|1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat|SelfReportedDisease.csv does not exist in current working directory CUsersTHGJDocumentsConsumerData  GithubPipelineData2023_04_18.
+frida_datasource|stem|error|f9274d0fab9d3bf0|a428b5fbc98ff8e5|-174592781||t19646.5261127602s|3bd8f66805fd112b|45|rds|local|vector|||0.05||no applicable method for filter applied to an object of class NULL
+frida_match|stem|e801569f7521c8df|616062c4025b7753|c6395a91cd2ad54c|966717421||t19646.5212296025s|fa77c53cd0f325c3|475374|rds|local|vector|||2.61||
+frida_match_data|stem|34a65ef5f362bb28|d22e03f284e0ef58|e3451566351e6740|-932946672|C:/Users/THGJ/Documents/ConsumerData - Github/Pipeline/Data/Common/SMIL-frida_match_2023_09_06.xlsx|t19639.6047967621s|6a15377ee6488b5c|263940|file|local|vector|||0.02||
+frida_match2|stem|error|82cd834b9098dc95|fbf45e5c3f769ab9|-1894165509||t19646.5261118339s|3bd8f66805fd112b|45|rds|local|vector|||1.67||argument of length 0
+frida_nutri_data|stem|e12adcf91f6a0a0a|2736a24c6030f60a|dfd59c4ca1130785|1428574064|G:/ConsumerData//Data/frida_match_data_26_10_22.xlsx|t19360.4085984308s|0635fb2695fe73d3|1043004|file|local|vector|||5.69||
+gpc_data|stem|f92ae59c73a466d8|308d80dc6c61461d|f47bb13d95a320a1|44951477|GPC_November_2021.csv|t19403.6046317438s|b8b49bf6019a506e|152388996|file|local|vector|||0||
+gs1_data|stem|62b39520bd1b8642|864a5207c4abb55a|f47bb13d95a320a1|-344452392|gs1_ssi.csv|t19403.6037895743s|db254c925965ad00|300453952|file|local|vector|||0||
+gs1_import|function|a5d42c1e5a1f5bee|||||||||||||||
+gs1_ssi|stem|96847295b125e126|33c30314ed14b32a|e201105777b0b68a|996015713||t19403.6074115984s|0d1847880376c0e2|23932984|rds|local|vector|||11.14|1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat|
+itemname_datasource|stem|error|0ae1eaab30ba6be3|4afc174e997413d4|1552751301||t19646.5260909647s|3bd8f66805fd112b|45|rds|local|vector|||0.03||no applicable method for rename applied to an object of class NULL
+Items_cumu|stem|error|225bf10f9dde8f6b|bd111d05efea9cfb|-969354432||t19646.5261225292s|3bd8f66805fd112b|45|rds|local|vector|||0.05||no applicable method for group_by applied to an object of class NULL
+kemiluppen_data|stem|68ff59f6125e20b0|248f5883de45f7f1|e3451566351e6740|226601041|C:/Users/THGJ/Documents/ConsumerData - Github/Pipeline/Data/Common/kemiluppen_ssi_2022.xlsx|t19646.5203469881s|4586807c5bb67258|6596|file|local|vector|||5.35|pakke tibble blev bygget under R version 4.2.3. pakke readr blev bygget under R version 4.2.3. pakke dplyr blev bygget under R version 4.2.3. pakke forcats blev bygget under R version 4.2.3. pakke psych blev bygget under R version 4.2.3|
+kemiluppen_datasource|stem|10db82485ba87a6f|c12473b533018c12|5065be628a59f5e5|401214542||t19646.5205297097s|2336b14cce37cc23|398|rds|local|vector|||0.16||
+matchscore_cutoff|stem|db6ca2172cc36fd2|9ca1d87bf07b8aa0|ef46db3751d8e999|115972208||t19646.5008412301s|7593c903cc1c2e97|52|rds|local|vector|||0||
+new_frida_group_names|stem|b0651879b3efbece|e4dd12b60029091b|9eddf0478fc6a409|1605425642||t19646.524337531s|ae6b2a5cd42d6b97|12937|rds|local|vector|||0.36||
+Nutri_plot|stem|error|72a0d8453ff88bbc|1945706779bb8dfe|763014505||t19646.5261314652s|3bd8f66805fd112b|45|rds|local|vector|||0.42||no applicable method for group_by applied to an object of class NULL
+open_food_facts_datasource|stem|0b30920f54876469|99fb4e95ec6b43cc|812660494d4412cb|-891464243||t19646.524331743s|111954d15eabb50a|21392|rds|local|vector|||0.14||
+open_food_facts_link|stem|a255c3f1aabb177f|6356c33c14d7ab28|f47bb13d95a320a1|-249325215||t19403.6060900191s|60071c996e1825e0|110|rds|local|vector|||0.02||
+openfoodfacts|stem|7eac879689ba891d|47a99ae22b4acd12|b30c1a597640438f|1058560494||t19646.5243276339s|eb4b749ff3939b4e|40585|rds|local|vector|||0.55||
+openfoodfacts_data|function|295dd10cdcb56f1e|||||||||||||||
+select_datasources|function|e9985b735df80037|||||||||||||||
+StoreInfluence_table|stem|error|d8da8d86b1fb4a4d|e7b5c92356dc8dd7|835521235||t19646.5261261778s|3bd8f66805fd112b|45|rds|local|vector|||0.28||no applicable method for filter applied to an object of class NULL
+cpd_data|stem|22e4012fa107cf19|b52af40e51102761|f47bb13d95a320a1|-1033842248|ConsumerReceiptData_Simulated.csv|t19646.5310095995s|58ccb1c7e30f785f|550802|file|local|vector|||0.01||
+gpc_path|stem|f680c885ef65393c|308d80dc6c61461d|f47bb13d95a320a1|-1913422159|GPC_November_2021.csv|t19646.5308014983s|30337b4a45ffdbb1|983|file|local|vector|||0||
+cpd|stem|369effe9fcaea07e|cdc28222a59664ab|38225c0e256b5656|1724334851||t19646.5312675365s|854db4c066d816b7|81997|rds|local|vector|||0.74||
+cpd2|stem|5c8450f8bbddcaf9|0a5a8027ba151f33|046cff195803df28|1812939928||t19646.531293939s|706484b983a1e749|143449|rds|local|vector|||1.76||
+gs1_path|stem|6bd4149e8d6a19b6|864a5207c4abb55a|f47bb13d95a320a1|-1290244502|gs1_ssi.csv|t19646.533240291s|941d8a882d16956a|2473|file|local|vector|||6.14|pakke tibble blev bygget under R version 4.2.3. pakke readr blev bygget under R version 4.2.3. pakke dplyr blev bygget under R version 4.2.3. pakke forcats blev bygget under R version 4.2.3. pakke psych blev bygget under R version 4.2.3|
+gs1_gpc|stem|90b0ecc269532288|0b8356aa3fd174d9|4afea42289969a1f|-842049751||t19646.5333961746s|b49b13807ff2c918|2140|rds|local|vector|||0.47||
+download_open_food_facts|function|7e2bbe6cfa1a4c50|||||||||||||||
+fix_utf8_and_casing_function|function|7a2dbff5f4a69d50|||||||||||||||
+my_directory|object|b945287dec6f3277|||||||||||||||
+combine_measures|function|35abb317ee36004b|||||||||||||||
+cpd_itemname_measure|function|6e6565a56178e9c1|||||||||||||||
+old.names_OFF|object|f54f64c1b57c6f3f|||||||||||||||
+old.names_frida|object|6c8b18b35eefbb90|||||||||||||||
+create_flowcharts|function|31addcf45e70b3d2|||||||||||||||
+cpd_join_datasources|function|40c13d101bf9ea2a|||||||||||||||
+file_path|object|b4464f14a136cf9d|||||||||||||||
+Items_cumu_plot|function|7eb26b2ce18fcd41|||||||||||||||
+cpd_enriched_clean|function|8da27e89a8067451|||||||||||||||
+old.names_kemiluppen|object|dd344ffd4544887d|||||||||||||||
+enrich_cpd_with_frida_data_new|function|dfe5188f177dfbb7|||||||||||||||
+DateofData|object|be1adf0ec9bf0a32|||||||||||||||
+datasource_priority_lists|object|846f827951a5b637|||||||||||||||
+StoreInfluence|function|4ac1d5ba274b9c8e|||||||||||||||
+nutricient_fun|function|ce1a8c01f4c97fb5|||||||||||||||
+setup_user_date_directory|object|b493ece12fdf4ba3|||||||||||||||
+fix_weight_in_cpd_amount|function|c546eb22354f8a71|||||||||||||||
+enrich_cpd_with_frida_data|function|86455a8cf2fbce3b|||||||||||||||
+old.names_gs1|object|635033a07bf0ba5f|||||||||||||||
+create_weight_volume_eco_country_vars|function|3337589f5ebc6225|||||||||||||||
+combine_datasources|function|613ce59e49cd11b8|||||||||||||||
+Table2_figures|function|9592302f86b4269e|||||||||||||||
+target.vars|object|4bec6171f4257059|||||||||||||||
+gs1_gpc_import|function|f1389da86d3a51f2|||||||||||||||
+UserID|object|c31f84f47f2831bd|||||||||||||||
+newfoodgroups|function|0ec6865354edafec|||||||||||||||
+join_gpc_data_to_gs1|function|90c06116b83907a6|||||||||||||||
+cpd_import|function|58d6532ed41cec98|||||||||||||||
+import_kemiluppen|function|519d96e34b864b2b|||||||||||||||
+import_produkt_and_frida_stems|function|a455fa4762367bdd|||||||||||||||
+evaluate_overlap_in_frida_product_stems|function|7cd4e1e87d69129a|||||||||||||||
+match_results|function|27b9e91072c0ee59|||||||||||||||
+openfoodfacts_clean|function|4c7d7e86ad13ab8e|||||||||||||||
+gs1_datasource|stem|error|58cf1e7ab02dee6f|6cf6c6ddb603bbd4|845663490||t19646.5359318598s|3bd8f66805fd112b|45|rds|local|vector|||0.51||Cant subset columns that dont exist.31mx39m Columns ener, pro, fat, and choavl dont exist.
+download_open_food_facts|function|7e2bbe6cfa1a4c50
+fix_utf8_and_casing_function|function|7a2dbff5f4a69d50
+my_directory|object|b945287dec6f3277
+combine_measures|function|35abb317ee36004b
+cpd_itemname_measure|function|6e6565a56178e9c1
+old.names_OFF|object|f54f64c1b57c6f3f
+old.names_frida|object|6c8b18b35eefbb90
+create_flowcharts|function|31addcf45e70b3d2
+cpd_join_datasources|function|40c13d101bf9ea2a
+file_path|object|b4464f14a136cf9d
+Items_cumu_plot|function|7eb26b2ce18fcd41
+cpd_enriched_clean|function|8da27e89a8067451
+old.names_kemiluppen|object|dd344ffd4544887d
+enrich_cpd_with_frida_data_new|function|dfe5188f177dfbb7
+DateofData|object|be1adf0ec9bf0a32
+datasource_priority_lists|object|846f827951a5b637
+StoreInfluence|function|4ac1d5ba274b9c8e
+nutricient_fun|function|ce1a8c01f4c97fb5
+setup_user_date_directory|object|b493ece12fdf4ba3
+fix_weight_in_cpd_amount|function|c546eb22354f8a71
+enrich_cpd_with_frida_data|function|86455a8cf2fbce3b
+old.names_gs1|object|635033a07bf0ba5f
+create_weight_volume_eco_country_vars|function|3337589f5ebc6225
+combine_datasources|function|613ce59e49cd11b8
+Table2_figures|function|9592302f86b4269e
+target.vars|object|4bec6171f4257059
+gs1_gpc_import|function|f1389da86d3a51f2
+UserID|object|c31f84f47f2831bd
+newfoodgroups|function|0ec6865354edafec
+join_gpc_data_to_gs1|function|626b10d707761b86
+cpd_import|function|58d6532ed41cec98
+import_kemiluppen|function|519d96e34b864b2b
+import_produkt_and_frida_stems|function|a455fa4762367bdd
+evaluate_overlap_in_frida_product_stems|function|7cd4e1e87d69129a
+match_results|function|27b9e91072c0ee59
+openfoodfacts_clean|function|4c7d7e86ad13ab8e
+gs1_datasource|stem|error|58cf1e7ab02dee6f|edd2563966fa8188|845663490||t19646.5359318598s|3bd8f66805fd112b|45|rds|local|vector|||0.42||Cant subset columns that dont exist.31mx39m Columns ener, pro, fat, and choavl dont exist.
+gs1_datasource|stem|error|58cf1e7ab02dee6f|edd2563966fa8188|845663490||t19646.5366527923s|3bd8f66805fd112b|45|rds|local|vector|||0.42||Cant subset columns that dont exist.31mx39m Columns ener, pro, fat, and choavl dont exist.
